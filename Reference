@@ -1,1 +1,90 @@
-%
+%This is for the LaTex configuration of the reference requirements of USST
+
+%package
+\usepackage[style=numeric-comp,doi=false,url=false,firstinits=true,backend=biber,sorting=none,maxnames=3,minnames=3]{biblatex}
+
+\AtEveryBibitem{\clearfield{month}}
+\AtEveryCitekey{\clearfield{month}}
+
+\DeclareCiteCommand{\supercite}[\mkbibsuperscript]
+  {\usebibmacro{cite:init}%
+   \let\multicitedelim=\supercitedelim
+   \iffieldundef{prenote}
+     {}
+     {\BibliographyWarning{Ignoring prenote argument}}%
+   \iffieldundef{postnote}
+     {}
+     {\BibliographyWarning{Ignoring postnote argument}}%
+  \bibopenbracket}%
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite:comp}}
+  {}
+  {\usebibmacro{cite:dump}\bibclosebracket}
+  
+  \let\cite=\supercite
+
+% The following codes is contributed by @moewe, see http://tex.stackexchange.com/a/301102/44227
+
+\DeclareNameAlias{author}{last-first}
+
+\renewcommand*{\revsdnamepunct}{}
+\renewrobustcmd*{\bibinitperiod}{}
+\renewcommand*{\finalnamedelim}{\multinamedelim}
+
+\DeclareFieldFormat*{title}{#1}
+\DeclareFieldFormat*{journaltitle}{#1\isdot}
+\DeclareFieldFormat*{issuetitle}{#1}
+\DeclareFieldFormat*{maintitle}{#1}
+\DeclareFieldFormat*{booktitle}{#1}
+
+\newbibmacro*{title}{%
+  \ifboolexpr{
+    test {\iffieldundef{title}}
+    and
+    test {\iffieldundef{subtitle}}
+  }
+    {}
+    {\printtext[title]{%
+       \printfield[titlecase]{title}%
+       \setunit{\subtitlepunct}%
+       \printfield[titlecase]{subtitle}}%
+     \ifentrytype{article}{\setunit{}\printtext{[J]}}{}
+     \ifentrytype{book}{\setunit{}\printtext{[M]}}{}%
+     \ifentrytype{inproceedings}{\setunit{}\printtext{[C]}}{}
+     \newunit}%
+  \printfield{titleaddon}}
+
+\renewbibmacro*{in:}{\ifentrytype{article}{}{\printtext{//}}}
+
+\renewbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \iffieldundef{series}
+    {}
+    {\newunit
+     \printfield{series}}%
+  \setunit{\addcomma\space}%
+  \printfield{issue}%
+  \setunit{\addcomma\space}%
+  \usebibmacro{date}
+  \setunit{\addcolon\space}%
+  \usebibmacro{issue}%
+  \setunit{\addcomma\space}%
+  \usebibmacro{volume+number+eid}%
+  \setunit{\addspace}%
+  \newunit}
+  
+\DeclareFieldFormat[article,periodical]{number}{\mkbibparens{#1}}
+\renewbibmacro*{volume+number+eid}{%
+  \printfield{volume}%
+  \printfield{number}%
+  \setunit{\addcomma\space}%
+  \printfield{eid}}
+
+\DeclareFieldFormat{pages}{#1}
+\DeclareFieldFormat{postnote}{#1}
+\DeclareFieldFormat{multipostnote}{#1}
+\renewcommand*{\bibpagespunct}{\addcolon\addspace}
+\renewcommand{\postnotedelim}{%
+  \iffieldpages{postnote}
+    {\addcolon\space}
+    {\addspace}}
